@@ -42,7 +42,7 @@ checksum = "2261d10cca569e4643e526d8dc2e62e433cc8aba21ab764233731f8d369bf394"
 [[package]]
 name = "bloblib"
 version = "0.1.0"
-source = "git+https://github.com/Blueblob860/bloblib-vex-v5.git#7367c4aec7cda3f71fd8dccc041cb9d016c3f7b2"
+source = "git+https://github.com/Blueblob860/bloblib-vex-v5.git#dcd4d91bff18cec40c83c8488bae2fe39a049129"
 dependencies = [
  "vexide",
 ]
