@@ -3,10 +3,18 @@
 use std::time::{Duration, Instant};
 
 use bloblib::prelude::*;
-use vexide::prelude::*;
+use vexide::{color::Color, display::{Font, FontSize, Rect, Text}, prelude::*};
+
+#[cfg(target_os = "vexos")]
+use vex_sdk_jumptable as _;
+
+#[cfg(not(target_os = "vexos"))]
+#[allow(unused_imports)]
+use vex_sdk_desktop::sdk as _;
 
 struct Robot {
     chassis: Chassis,
+    display: Display
 }
 
 impl Compete for Robot {
@@ -45,6 +53,13 @@ impl Compete for Robot {
             let left_y = controller_state.left_stick.y();
             let right_x = controller_state.right_stick.x();
             self.chassis.arcade(left_y, right_x, false, 0.5).await;
+            //let touch = self.display.touch_status();
+            // self.display.draw_text(
+            //     &Text::from_string("hi",
+            //     Font::new(FontSize::MEDIUM, vexide::display::FontFamily::Proportional),
+            //     [10, 10]), Color::GRAY, Some(Color::BLACK));
+            self.display.fill(&Rect::new([0, 0], [480, 240]), 0x006fff);
+            self.display.render();
             sleep(Duration::from_millis(25)).await;
         }
     }
@@ -56,19 +71,29 @@ impl Compete for Robot {
 
 #[vexide::main]
 async fn main(peripherals: Peripherals) {
+    #[cfg(not(target_os = "vexos"))]
+    {
+        use tracing::level_filters::LevelFilter;
+ 
+        tracing_subscriber::fmt()
+            .with_max_level(LevelFilter::WARN)
+            .init();
+        vex_sdk_desktop::init().expect("Simulator didn't initialize");
+    }
+
     // Drivetrain struct
     let drive = Drivetrain::new(
         // Left Side Motors
         vec![
-            Motor::new(peripherals.port_12, Gearset::Blue, Direction::Forward),
-            Motor::new(peripherals.port_13, Gearset::Blue, Direction::Reverse),
-            Motor::new(peripherals.port_14, Gearset::Blue, Direction::Reverse)
+            FilteredMotor::new(peripherals.port_12, Gearset::Blue, Direction::Forward),
+            FilteredMotor::new(peripherals.port_13, Gearset::Blue, Direction::Reverse),
+            FilteredMotor::new(peripherals.port_14, Gearset::Blue, Direction::Reverse)
         ],
         // Right Side Motors
         vec![
-            Motor::new(peripherals.port_17, Gearset::Blue, Direction::Forward),
-            Motor::new(peripherals.port_18, Gearset::Blue, Direction::Forward),
-            Motor::new(peripherals.port_19, Gearset::Blue, Direction::Reverse)
+            FilteredMotor::new(peripherals.port_17, Gearset::Blue, Direction::Forward),
+            FilteredMotor::new(peripherals.port_18, Gearset::Blue, Direction::Forward),
+            FilteredMotor::new(peripherals.port_19, Gearset::Blue, Direction::Reverse)
         ],
         10.6, // Track Width
         2.75, // Wheel Size
@@ -90,7 +115,7 @@ async fn main(peripherals: Peripherals) {
     // Set angular PID constants
     chassis.angular = PidBuilder { kp: 2.0, kd: 8.0, .. }.into();
 
-    let mut robot = Robot { chassis };
+    let mut robot = Robot { chassis, display: peripherals.display };
 
     // Calibrate the drive and spawn the odom loop, then start the competition loop
     let _odom_loop = spawn(robot.chassis.calibrate(true).await);

@@ -1,0 +1,10 @@
+# All fields are optional.
+debug = ["text-buffer"]
+header-hidden = false
+theme = "Dark"
+battery-capacity = 100.0
+suppress-warnings = [
+    "sdk-unimplemented",
+    "missing-devices",
+    "unknown-enum-variants",
+]

@@ -1,6 +1,13 @@
 [target.'cfg(target_os = "vexos")']
 rustflags = ["-Clink-arg=-Tvexide.ld"]
 
+[target.x86_64-pc-windows-msvc.freetype]
+rustc-link-search = [".\\"]
+rustc-link-lib = ["freetype"]
+
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "link-arg=/STACK:67108864"]
+
 [unstable]
 build-std = ["std", "panic_abort"]
 build-std-features = ["compiler-builtins-mem"]
