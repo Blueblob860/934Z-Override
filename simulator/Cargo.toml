@@ -7,17 +7,11 @@ edition = "2024"
 anyhow = "1.0.104"
 eframe = { version = "0.35.0", features = ["persistence"] }
 egui = "0.35.0"
-egui_extras = "0.35.0"
+#egui_extras = "0.35.0"
 iceoryx2 = "0.9.3"
-image = { version = "0.25.10", features = ["png"] }
+#image = { version = "0.25.10", features = ["png"] }
 nalgebra = "0.35.0"
 rapier3d = { version = "0.34.0", features = ["simd-nightly", "serde-serialize"] }
 roboscope-ipc = { git = "https://github.com/vexide/roboscope", version = "0.1.0" }
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
-
-[profile.release]
-opt-level = 2
-
-[profile.dev.package."*"]
-opt-level = 2

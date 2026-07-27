@@ -3,9 +3,26 @@ name = "Override-934Z"
 version = "0.1.0"
 edition = "2024"
 
-[profile.release]
+[profile.release-vexos]
+inherits = "release"
 opt-level = "z"
 lto = "fat"
+
+[profile.release]
+lto = "off"
+opt-level = 2
+codegen-units = 16
+debug = "none"
+
+[profile.release-full]
+inherits = "release"
+lto = "fat"
+opt-level = 2
+codegen-units = 1
+debug = "none"
+
+[profile.release.package."*"]
+opt-level = 2
 
 # These fields configure default behavior for uploads with `cargo v5`.
 [package.metadata.v5]

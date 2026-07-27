@@ -4,7 +4,4 @@ header-hidden = false
 theme = "Dark"
 battery-capacity = 100.0
 suppress-warnings = [
-    "sdk-unimplemented",
-    "missing-devices",
-    "unknown-enum-variants",
 ]

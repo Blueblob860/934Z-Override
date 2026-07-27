@@ -3,7 +3,7 @@
 use std::time::{Duration, Instant};
 
 use bloblib::prelude::*;
-use vexide::{color::Color, display::{Font, FontSize, Rect, Text}, prelude::*};
+use vexide::{color::Color, display::{Font, FontSize, Rect, Text, TouchState}, prelude::*};
 
 #[cfg(target_os = "vexos")]
 use vex_sdk_jumptable as _;
@@ -43,24 +43,31 @@ impl Compete for Robot {
 
     async fn driver(&mut self) {
         println!("Driver!");
+        self.display.set_render_mode(vexide::display::RenderMode::DoubleBuffered);
         loop {
-            let controller_state = self.chassis.controller.write().await.state();
-            if controller_state.is_err() {
-                sleep(Duration::from_millis(25)).await;
-                continue;
-            }
-            let controller_state = controller_state.unwrap();
-            let left_y = controller_state.left_stick.y();
-            let right_x = controller_state.right_stick.x();
-            self.chassis.arcade(left_y, right_x, false, 0.5).await;
-            //let touch = self.display.touch_status();
-            // self.display.draw_text(
-            //     &Text::from_string("hi",
-            //     Font::new(FontSize::MEDIUM, vexide::display::FontFamily::Proportional),
-            //     [10, 10]), Color::GRAY, Some(Color::BLACK));
-            self.display.fill(&Rect::new([0, 0], [480, 240]), 0x006fff);
-            self.display.render();
-            sleep(Duration::from_millis(25)).await;
+            // let controller_state = self.chassis.controller.write().await.state();
+            // if controller_state.is_err() {
+            //     sleep(Duration::from_millis(25)).await;
+            //     continue;
+            // }
+            // let controller_state = controller_state.unwrap();
+            // let left_y = controller_state.left_stick.y();
+            // let right_x = controller_state.right_stick.x();
+            // self.chassis.arcade(left_y, right_x, false, 0.5).await;
+            let touch = self.display.touch_status();
+            println!("{}, {}", touch.point.x, touch.point.y);
+            //self.display.erase(Color::BLACK);
+            //self.display.draw_text(
+            //    &Text::from_string(format!("touch_pos: {}, {}", touch.point.x, touch.point.y),
+            //    Font::new(FontSize::SMALL, vexide::display::FontFamily::Proportional),
+            //    [10, 10]), Color::WHITE, Some(Color::BLACK));
+            //self.display.draw_text(
+            //    &Text::from_string(format!("click: {}, {}", touch.state == TouchState::Pressed, touch.state == TouchState::Held),
+            //    Font::new(FontSize::SMALL, vexide::display::FontFamily::Proportional),
+            //    [10, 24]), Color::WHITE, Some(Color::BLACK));
+            // self.display.fill(&Rect::new([0, 0], [480, 240]), 0x006fff);
+            //self.display.render();
+            sleep(Duration::from_millis(500)).await;
         }
     }
 

@@ -1,7 +1,5 @@
 #![feature(default_field_values)]
 
-use std::thread::spawn;
-
 use roboscope_ipc::{Publisher, SimServices, Subscriber, display::{DisplayFrame, DisplayInput}};
 
 pub mod gui;
