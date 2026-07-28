@@ -55,19 +55,18 @@ impl Compete for Robot {
             // let right_x = controller_state.right_stick.x();
             // self.chassis.arcade(left_y, right_x, false, 0.5).await;
             let touch = self.display.touch_status();
-            println!("{}, {}", touch.point.x, touch.point.y);
-            //self.display.erase(Color::BLACK);
-            //self.display.draw_text(
-            //    &Text::from_string(format!("touch_pos: {}, {}", touch.point.x, touch.point.y),
-            //    Font::new(FontSize::SMALL, vexide::display::FontFamily::Proportional),
-            //    [10, 10]), Color::WHITE, Some(Color::BLACK));
-            //self.display.draw_text(
-            //    &Text::from_string(format!("click: {}, {}", touch.state == TouchState::Pressed, touch.state == TouchState::Held),
-            //    Font::new(FontSize::SMALL, vexide::display::FontFamily::Proportional),
-            //    [10, 24]), Color::WHITE, Some(Color::BLACK));
+            self.display.erase(Color::BLACK);
+            self.display.draw_text(
+                &Text::from_string(format!("touch_pos: {}, {}", touch.point.x, touch.point.y),
+                Font::new(FontSize::SMALL, vexide::display::FontFamily::Proportional),
+                [10, 10]), Color::WHITE, Some(Color::BLACK));
+            self.display.draw_text(
+                &Text::from_string(format!("click: {}, {}", touch.state == TouchState::Pressed, touch.state == TouchState::Held),
+                Font::new(FontSize::SMALL, vexide::display::FontFamily::Proportional),
+                [10, 24]), Color::WHITE, Some(Color::BLACK));
             // self.display.fill(&Rect::new([0, 0], [480, 240]), 0x006fff);
-            //self.display.render();
-            sleep(Duration::from_millis(500)).await;
+            self.display.render();
+            sleep(Duration::from_millis(25)).await;
         }
     }
 
