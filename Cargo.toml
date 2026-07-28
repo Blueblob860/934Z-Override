@@ -39,7 +39,7 @@ features = ["full"]
 vex-sdk-jumptable = { git = "https://github.com/vexide/vex-sdk" }
 
 [target.'cfg(not(target_os = "vexos"))'.dependencies]
-vex-sdk-desktop = { git = "https://github.com/vexide/roboscope" }
+vex-sdk-desktop = { path = "../roboscope/simulator" }
 
 [dependencies]
 bloblib = { git = "https://github.com/Blueblob860/bloblib-vex-v5.git" }

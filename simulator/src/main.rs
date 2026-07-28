@@ -1,6 +1,6 @@
 #![feature(default_field_values)]
 
-use roboscope_ipc::{Publisher, SimServices, Subscriber, display::{DisplayFrame, DisplayInput}};
+use roboscope_ipc::{Publisher, SimServices, Subscriber, controller::ControllerInput, display::{DisplayFrame, DisplayInput}};
 
 pub mod gui;
 
@@ -10,11 +10,12 @@ fn main() -> anyhow::Result<()> {
     //let device_cmds = sim.device_cmds()?.subscriber_builder().create()?;
     let display_pub = sim.display_input()?.publisher_builder().create()?;
     let display_sub = sim.display_frames()?.subscriber_builder().create()?;
-    gui_init(display_pub, display_sub).unwrap();
+    let prim_controller_pub = sim.primary_controller_input()?.publisher_builder().create()?;
+    gui_init(display_pub, display_sub, prim_controller_pub).unwrap();
     Ok(())
 }
 
-fn gui_init(input: Publisher<DisplayInput>, frames: Subscriber<DisplayFrame>) -> eframe::Result {
+fn gui_init(input: Publisher<DisplayInput>, frames: Subscriber<DisplayFrame>, cont1: Publisher<ControllerInput>) -> eframe::Result {
     let native_opts = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([834.0, 480.0])
@@ -26,6 +27,6 @@ fn gui_init(input: Publisher<DisplayInput>, frames: Subscriber<DisplayFrame>) ->
     eframe::run_native(
         "Bloblib Simulator", 
         native_opts,
-        Box::new(|cc| Ok(Box::new(gui::ViewportUi::new(cc, input, frames)))) 
+        Box::new(|cc| Ok(Box::new(gui::ViewportUi::new(cc, input, frames, cont1)))) 
     )
 }

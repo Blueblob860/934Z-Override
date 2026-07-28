@@ -3,7 +3,7 @@
 use std::time::{Duration, Instant};
 
 use bloblib::prelude::*;
-use vexide::{color::Color, display::{Font, FontSize, Rect, Text, TouchState}, prelude::*};
+use vexide::{color::Color, controller::ControllerState, display::{Font, FontSize, Rect, Text, TouchState}, prelude::*};
 
 #[cfg(target_os = "vexos")]
 use vex_sdk_jumptable as _;
@@ -45,7 +45,8 @@ impl Compete for Robot {
         println!("Driver!");
         self.display.set_render_mode(vexide::display::RenderMode::DoubleBuffered);
         loop {
-            // let controller_state = self.chassis.controller.write().await.state();
+            let controller_state = self.chassis.controller.write().await.state();
+            let controller_connected = self.chassis.controller.read().await.connection();
             // if controller_state.is_err() {
             //     sleep(Duration::from_millis(25)).await;
             //     continue;
@@ -54,19 +55,42 @@ impl Compete for Robot {
             // let left_y = controller_state.left_stick.y();
             // let right_x = controller_state.right_stick.x();
             // self.chassis.arcade(left_y, right_x, false, 0.5).await;
-            let touch = self.display.touch_status();
+            // let touch = self.display.touch_status();
+            let state = controller_state.unwrap_or_default();
             self.display.erase(Color::BLACK);
             self.display.draw_text(
-                &Text::from_string(format!("touch_pos: {}, {}", touch.point.x, touch.point.y),
+                &Text::from_string(format!("connection: {controller_connected:?}"),
                 Font::new(FontSize::SMALL, vexide::display::FontFamily::Proportional),
                 [10, 10]), Color::WHITE, Some(Color::BLACK));
             self.display.draw_text(
-                &Text::from_string(format!("click: {}, {}", touch.state == TouchState::Pressed, touch.state == TouchState::Held),
+                &Text::from_string(format!("left: {}, {}", state.left_stick.x_raw(), state.left_stick.y_raw()),
                 Font::new(FontSize::SMALL, vexide::display::FontFamily::Proportional),
-                [10, 24]), Color::WHITE, Some(Color::BLACK));
+                [10, 30]), Color::WHITE, Some(Color::BLACK));
+            self.display.draw_text(
+                &Text::from_string(format!("right: {}, {}", state.right_stick.x_raw(), state.right_stick.y_raw()),
+                Font::new(FontSize::SMALL, vexide::display::FontFamily::Proportional),
+                [10, 50]), Color::WHITE, Some(Color::BLACK));
+            self.display.draw_text(
+                &Text::from_string(format!("lt: {}, {}", state.button_l1.is_pressed(), state.button_l2.is_pressed()),
+                Font::new(FontSize::SMALL, vexide::display::FontFamily::Proportional),
+                [10, 70]), Color::WHITE, Some(Color::BLACK));
+            self.display.draw_text(
+                &Text::from_string(format!("rt: {}, {}", state.button_r1.is_pressed(), state.button_r2.is_pressed()),
+                Font::new(FontSize::SMALL, vexide::display::FontFamily::Proportional),
+                [10, 90]), Color::WHITE, Some(Color::BLACK));
+            self.display.draw_text(
+                &Text::from_string(format!("up: {}, down: {}, left: {}, right: {}", state.button_up.is_pressed(), state.button_down.is_pressed(),
+                                                    state.button_left.is_pressed(), state.button_right.is_pressed()),
+                Font::new(FontSize::SMALL, vexide::display::FontFamily::Proportional),
+                [10, 110]), Color::WHITE, Some(Color::BLACK));
+            self.display.draw_text(
+                &Text::from_string(format!("a: {}, b: {}, x: {}, y: {}", state.button_a.is_pressed(), state.button_b.is_pressed(),
+                                                    state.button_x.is_pressed(), state.button_y.is_pressed()),
+                Font::new(FontSize::SMALL, vexide::display::FontFamily::Proportional),
+                [10, 130]), Color::WHITE, Some(Color::BLACK));
             // self.display.fill(&Rect::new([0, 0], [480, 240]), 0x006fff);
             self.display.render();
-            sleep(Duration::from_millis(25)).await;
+            sleep(Controller::UPDATE_INTERVAL).await;
         }
     }
 
